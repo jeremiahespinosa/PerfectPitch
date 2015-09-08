@@ -10,7 +10,13 @@ import Foundation
 
 //NSObject is root class for most classes
 class RecordedAudio: NSObject{
+    
     var filePathUrl : NSURL!;
     var title : String!;
     
+    init(filePathUrl:NSURL, title:String) {
+        // perform some initialization here
+        self.filePathUrl = filePathUrl
+        self.title = title
+    }
 }
