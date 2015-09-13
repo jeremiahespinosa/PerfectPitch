@@ -8,23 +8,30 @@
 import AVFoundation
 import UIKit
 
-class PlaySoundsViewController: UIViewController {
+class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
-    var audioPlayer : AVAudioPlayer!;
-    var receivedAudio: RecordedAudio!;
+    var audioPlayer : AVAudioPlayer!
+    var receivedAudio: RecordedAudio!
     var avAudioEngine:AVAudioEngine!
     var avAudioPlayerNode:AVAudioPlayerNode!
     var avAudioFile : AVAudioFile!
     
+    @IBOutlet weak var stopPlayingAudioButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        audioPlayer = AVAudioPlayer(contentsOfURL: receivedAudio.filePathUrl, error: nil);
-        audioPlayer.enableRate = true;
-        avAudioEngine = AVAudioEngine()
-        avAudioFile = AVAudioFile(forReading: receivedAudio.filePathUrl, error: nil)
         
+//        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+
+        audioPlayer = AVAudioPlayer(contentsOfURL: receivedAudio.filePathUrl, error: nil)
+        audioPlayer.delegate = self
+        audioPlayer.enableRate = true
+        avAudioEngine = AVAudioEngine()
+        avAudioFile = AVAudioFile(forReading: receivedAudio.filePathUrl, error: nil)        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        shouldWeShowStopButton(false)
     }
 
     override func didReceiveMemoryWarning() {
@@ -33,23 +40,45 @@ class PlaySoundsViewController: UIViewController {
     }
     
     @IBAction func playFastAudio(sender: UIButton) {
-        playAudio(true);
+        playAudio(true)
     }
   
     @IBAction func stopPlayingAudio(sender: UIButton) {
-        audioPlayer.stop();
+        println("stop button clicked")
+        
+        audioPlayer.stop()
+        
+        stopAndResetAudioEngine()
+        
+        shouldWeShowStopButton(false)
     }
     
     @IBAction func playSlowedDown(sender: UIButton) {
-        playAudio(false);
+        playAudio(false)
     }
     
     @IBAction func playVaderAudio(sender: UIButton) {
-        playAudioWithVariablePitch(-1000)
+        playAudioWithVariablePitch(-1000, shouldPlayReverb: false, shouldPlayEcho: false)
+    }
+    
+    func shouldWeShowStopButton(shouldShow: Bool){
+        println("determine if we should hide the button")
+        if shouldShow {
+            println("dont hide the button")
+            stopPlayingAudioButton.hidden = false
+        }
+        else{
+            println("hide the button")
+            stopPlayingAudioButton.hidden = true
+        }
+    }
+    
+    @IBAction func playEchoAudio(sender: UIButton) {
+        playAudioWithVariablePitch(0, shouldPlayReverb: false, shouldPlayEcho: true)
     }
     
     @IBAction func playChipmunkAudio(sender: UIButton) {
-        playAudioWithVariablePitch(1000)
+        playAudioWithVariablePitch(1000, shouldPlayReverb: false, shouldPlayEcho: false)
     }
     
     func stopAndResetAudioEngine(){
@@ -58,7 +87,11 @@ class PlaySoundsViewController: UIViewController {
         avAudioEngine.reset()
     }
     
-    func playAudioWithVariablePitch(pitch: Float){
+    @IBAction func playReverbAudio(sender: UIButton) {
+        playAudioWithVariablePitch(0, shouldPlayReverb: true, shouldPlayEcho: false)
+    }
+    
+    func playAudioWithVariablePitch(pitch: Float, shouldPlayReverb: Bool, shouldPlayEcho: Bool){
         stopAndResetAudioEngine()
         
         var audioPlayerNode = AVAudioPlayerNode()
@@ -68,29 +101,77 @@ class PlaySoundsViewController: UIViewController {
         var changePitchEffect = AVAudioUnitTimePitch()
         changePitchEffect.pitch = pitch
         
-        avAudioEngine.attachNode(changePitchEffect)
+        var effect = AVAudioUnitReverb()
         
-        avAudioEngine.connect(audioPlayerNode, to: changePitchEffect, format: nil)
-        avAudioEngine.connect(changePitchEffect, to: avAudioEngine.outputNode, format: nil)
+       
         
+        if shouldPlayReverb {
+            println("setting up the reverb")
+            var reverb = AVAudioUnitReverb()
+            reverb.loadFactoryPreset(AVAudioUnitReverbPreset.Plate)
+            reverb.wetDryMix = 50
+            avAudioEngine.attachNode(reverb)
+            avAudioEngine.connect(audioPlayerNode, to: reverb, format: nil)
+            avAudioEngine.connect(reverb, to: avAudioEngine.outputNode, format: nil)
+        }
+        else if shouldPlayEcho{
+            println("not doing anything about reverb")
+            
+            var echoNode = AVAudioUnitDelay()
+            echoNode.delayTime = NSTimeInterval(0.3)
+            
+            avAudioEngine.attachNode(echoNode)
+            
+            // Connect Player --> AudioEffect
+            avAudioEngine.connect(audioPlayerNode, to: echoNode, format: nil)
+            
+            // Connect AudioEffect --> Output
+            avAudioEngine.connect(echoNode, to: avAudioEngine.outputNode, format: nil)
+        }
+        else{
+            println("playing with pitch modification")
+            
+            //playing with a pitch modification
+            avAudioEngine.attachNode(changePitchEffect)
+            
+            avAudioEngine.connect(audioPlayerNode, to: changePitchEffect, format: nil)
+            avAudioEngine.connect(changePitchEffect, to: avAudioEngine.outputNode, format: nil)
+        }
+        
+
+        
+//        audioPlayerNode.scheduleFile(avAudioFile, atTime: nil, completionHandler:{()->Void in
+//            println("file done playing")
+//        })
+
         audioPlayerNode.scheduleFile(avAudioFile, atTime: nil, completionHandler: nil)
+        
         avAudioEngine.startAndReturnError(nil)
         audioPlayerNode.play()
+        
+        shouldWeShowStopButton(true)
     }
     
     func playAudio(isFast: Bool){
         stopAndResetAudioEngine()
         
-        audioPlayer.stop();
-        audioPlayer.currentTime = 0.0;
+        audioPlayer.stop()
+        audioPlayer.currentTime = 0.0
         
         if isFast {
-            audioPlayer.rate = 2.0;
+            audioPlayer.rate = 2.0
         }
         else{
-            audioPlayer.rate = 0.5;
+            audioPlayer.rate = 0.5
         }
         
-        audioPlayer?.play();
+        audioPlayer?.play()
+        
+        shouldWeShowStopButton(true)
+    }
+    
+    func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
+        println("audio player finshed paying")
+        shouldWeShowStopButton(false)
     }
 }
