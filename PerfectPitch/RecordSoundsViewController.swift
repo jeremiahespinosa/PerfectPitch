@@ -18,9 +18,7 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
     @IBOutlet weak var recordingLabel: UILabel!
     @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var pauseButton: UIButton!
-    
-//    @IBOutlet weak var resumeButton: UIButton!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -33,7 +31,6 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
         //for showing and hiding things
         stopButton.hidden = true
         pauseButton.hidden = true
-//        resumeButton.hidden = true
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -63,8 +60,6 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
         stopButton.hidden = false
         recordingLabel.text = "Recording in Progress"
         recordButton.enabled = false
-//        resumeButton.hidden = true
-
         
         if shouldStartFresh {
             let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
@@ -102,8 +97,6 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
         pauseButton.enabled = false
         
         recordButton.enabled = true
-//        pauseButton.hidden = true
-//        resumeButton.hidden = false
         
         audioRecorder.pause()
     }
@@ -114,9 +107,7 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
         recordButton.enabled = true
         
         audioRecorder.stop()
-//        var audioSession = AVAudioSession.sharedInstance()
         var audioSession = AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
-//        audioSession.setActive(false, error: nil)
     }
     
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder!, successfully flag: Bool) {

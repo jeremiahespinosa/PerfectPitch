@@ -20,8 +20,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
 
         audioPlayer = AVAudioPlayer(contentsOfURL: receivedAudio.filePathUrl, error: nil)
         audioPlayer.delegate = self
@@ -99,8 +97,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         changePitchEffect.pitch = pitch
         
         var effect = AVAudioUnitReverb()
-        
-       
         
         if shouldPlayReverb {
             var reverb = AVAudioUnitReverb()
