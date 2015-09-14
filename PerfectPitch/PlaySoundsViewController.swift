@@ -44,7 +44,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     }
   
     @IBAction func stopPlayingAudio(sender: UIButton) {
-        println("stop button clicked")
         
         audioPlayer.stop()
         
@@ -62,13 +61,11 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     func shouldWeShowStopButton(shouldShow: Bool){
-        println("determine if we should hide the button")
+
         if shouldShow {
-            println("dont hide the button")
             stopPlayingAudioButton.hidden = false
         }
         else{
-            println("hide the button")
             stopPlayingAudioButton.hidden = true
         }
     }
@@ -106,7 +103,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
        
         
         if shouldPlayReverb {
-            println("setting up the reverb")
             var reverb = AVAudioUnitReverb()
             reverb.loadFactoryPreset(AVAudioUnitReverbPreset.Plate)
             reverb.wetDryMix = 50
@@ -115,8 +111,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             avAudioEngine.connect(reverb, to: avAudioEngine.outputNode, format: nil)
         }
         else if shouldPlayEcho{
-            println("not doing anything about reverb")
-            
+
             var echoNode = AVAudioUnitDelay()
             echoNode.delayTime = NSTimeInterval(0.3)
             
@@ -129,8 +124,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             avAudioEngine.connect(echoNode, to: avAudioEngine.outputNode, format: nil)
         }
         else{
-            println("playing with pitch modification")
-            
+
             //playing with a pitch modification
             avAudioEngine.attachNode(changePitchEffect)
             
@@ -138,11 +132,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             avAudioEngine.connect(changePitchEffect, to: avAudioEngine.outputNode, format: nil)
         }
         
-
-        
-//        audioPlayerNode.scheduleFile(avAudioFile, atTime: nil, completionHandler:{()->Void in
-//            println("file done playing")
-//        })
 
         audioPlayerNode.scheduleFile(avAudioFile, atTime: nil, completionHandler: nil)
         
@@ -171,7 +160,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
-        println("audio player finshed paying")
         shouldWeShowStopButton(false)
     }
 }

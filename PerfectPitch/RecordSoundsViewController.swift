@@ -47,11 +47,9 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
 
     @IBAction func recordAudio(sender: UIButton) {
         if pauseButton.enabled{
-            println("pause button not enabled - so starting fresh?")
             shouldStartRecordingOrResume(true)
         }
         else{
-            println("pause button is enabled - so resuming?")
             shouldStartRecordingOrResume(false)
         }
     }
@@ -91,7 +89,6 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
             audioRecorder.record()
         }
         else{
-            println("resuming recording")
             audioRecorder.record()
         }
     }
@@ -133,7 +130,6 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
         }
         else{
             //else print error
-            println("Recording was not successful")
             stopButton.hidden = true
             recordButton.enabled = true
         }
