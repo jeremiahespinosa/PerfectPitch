@@ -21,11 +21,11 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        audioPlayer = AVAudioPlayer(contentsOfURL: receivedAudio.filePathUrl, error: nil)
+        audioPlayer = try? AVAudioPlayer(contentsOfURL: receivedAudio.filePathUrl)
         audioPlayer.delegate = self
         audioPlayer.enableRate = true
         avAudioEngine = AVAudioEngine()
-        avAudioFile = AVAudioFile(forReading: receivedAudio.filePathUrl, error: nil)        
+        avAudioFile = try? AVAudioFile(forReading: receivedAudio.filePathUrl)        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -131,7 +131,19 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
         audioPlayerNode.scheduleFile(avAudioFile, atTime: nil, completionHandler: nil)
         
-        avAudioEngine.startAndReturnError(nil)
+//        
+//        do {
+//            try avAudioEngine.startAndReturnError()
+//        } catch _ {
+//        }
+        
+        do {
+            try avAudioEngine.start()
+        } catch let error as NSError {
+            print("error starting up Audio Engine: \(error.localizedDescription)")
+            return
+        }
+            
         audioPlayerNode.play()
         
         shouldWeShowStopButton(true)
@@ -155,7 +167,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         shouldWeShowStopButton(true)
     }
     
-    func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
         shouldWeShowStopButton(false)
     }
 }

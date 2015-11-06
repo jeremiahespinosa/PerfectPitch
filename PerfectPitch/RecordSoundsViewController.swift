@@ -62,7 +62,7 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
         recordButton.enabled = false
         
         if shouldStartFresh {
-            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
             
             let recordingName = "my_audio.wav"  //going to leave this way so that we do not create unnecessary files
             
@@ -71,11 +71,26 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
             
             
             var session = AVAudioSession.sharedInstance()
-            session.setCategory(AVAudioSessionCategoryRecord, error: nil)
+            do {
+                try session.setCategory(AVAudioSessionCategoryRecord)
+            } catch _ {
+            }
             
             var maxTime = NSTimeInterval()
             
-            audioRecorder = AVAudioRecorder(URL: filePath, settings: nil, error: nil)
+            //audioRecorder = try? AVAudioRecorder(URL: filePath, settings: nil)
+            
+            guard let filePathURL = NSURL.fileURLWithPathComponents(pathArray) else {
+                print("Unknown error setting up URL: \(pathArray)")
+                return
+            }
+            do {
+                audioRecorder = try AVAudioRecorder(URL: filePathURL, settings: [:])
+            } catch let error as NSError {
+                print("error setting up Audio Recorder: \(error.localizedDescription)")
+                return
+            }
+            
             audioRecorder.delegate = self
             audioRecorder.meteringEnabled = true
             audioRecorder.recordForDuration(maxTime)
@@ -107,10 +122,16 @@ class RecordsSoundViewController: UIViewController, AVAudioRecorderDelegate {
         recordButton.enabled = true
         
         audioRecorder.stop()
-        var audioSession = AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+        var audioSession: Bool
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            audioSession = true
+        } catch _ {
+            audioSession = false
+        }
     }
     
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder!, successfully flag: Bool) {
+    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         
         //use the boolean to see if audio recording finished successfully
         if flag {
