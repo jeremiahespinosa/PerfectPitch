@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/jeremiahespinosa/PerfectPitch.svg?branch=master)](https://travis-ci.org/jeremiahespinosa/PerfectPitch)
 ##App Specification: Pitch Perfect
 
 iOS Developer Nanodegree
