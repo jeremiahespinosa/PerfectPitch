@@ -21,7 +21,10 @@ At the top left of the screen, the navigation bar’s left button says “Record
 Clicking this button will pop the play sounds view off the stack and return the user to the record sounds view (which is the default behavior of the navigation bar).
 At this point, the play sounds view should be in its original state. The microphone button should be enabled and the stop button should be hidden. The second scene (described below under “Play Sounds View”) onto the navigation stack.
 The title in the navigation bar should be “Record”.
-      
+
+<img src="screenshots/screenshot1.png" width="25%" />
+<img src="screenshots/screenshot2.png" width="25%" />
+
 2. Play Sounds View: The play sounds view has four buttons to play the recorded sound file and a button to stop the playback.
 The buttons for playing the recorded sounds will have images corresponding to their sound effect:
   1. Chipmunk image → High-pitched sound 
@@ -31,4 +34,5 @@ The buttons for playing the recorded sounds will have images corresponding to th
 
 Additional sound effects, such as reverb and echo, can be implemented and added to this view for extra credit.
        
- 
+
+<img src="screenshots/screenshot3.png" width="25%" />
