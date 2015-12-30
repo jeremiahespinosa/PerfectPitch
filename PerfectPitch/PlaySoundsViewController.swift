@@ -130,12 +130,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         
 
         audioPlayerNode.scheduleFile(avAudioFile, atTime: nil, completionHandler: nil)
-        
-//        
-//        do {
-//            try avAudioEngine.startAndReturnError()
-//        } catch _ {
-//        }
+
         
         do {
             try avAudioEngine.start()
